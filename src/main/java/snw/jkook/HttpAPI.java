@@ -16,24 +16,23 @@
 
 package snw.jkook;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.NoSuchElementException;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import snw.jkook.entity.Game;
 import snw.jkook.entity.Guild;
 import snw.jkook.entity.User;
 import snw.jkook.entity.channel.Category;
-import snw.jkook.entity.channel.Channel;
 import snw.jkook.entity.channel.TextChannel;
 import snw.jkook.entity.channel.VoiceChannel;
 import snw.jkook.message.ChannelMessage;
 import snw.jkook.message.PrivateMessage;
 import snw.jkook.message.TextChannelMessage;
 import snw.jkook.util.PageIterator;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.NoSuchElementException;
-import java.util.function.Supplier;
 
 /**
  * Represents the entry of Kook HTTP API.
@@ -53,21 +52,13 @@ public interface HttpAPI {
     User getUser(String id);
 
     /**
-     * Get a guild by guild ID. <p>
+     * Get a guild by guild ID.
+     * <p>
      * <b>Null is returned if you don't have permission to access it.</b>
      *
      * @param id The ID of a guild
      */
     Guild getGuild(String id);
-
-    /**
-     * Get a channel by ID.
-     *
-     * @param id The channel ID
-     * @deprecated Use the exact get channel methods instead.
-     */
-    @Deprecated
-    Channel getChannel(String id);
 
     /**
      * Get a text channel by ID. <br>
@@ -102,9 +93,9 @@ public interface HttpAPI {
 
     /**
      * Upload a file to Kook server.
-     * 
+     *
      * @param filename The name of the file (with the extension name)
-     * @param content The content byte array of the file
+     * @param content  The content byte array of the file
      * @return The URL string of the remote file
      */
     String uploadFile(String filename, byte[] content);
@@ -113,7 +104,7 @@ public interface HttpAPI {
      * Upload a file to Kook server.
      *
      * @param filename The name of the file (with the extension name)
-     * @param url The URL of another remote file
+     * @param url      The URL of another remote file
      * @return The URL string of the remote file
      */
     String uploadFile(String filename, String url);
@@ -153,22 +144,23 @@ public interface HttpAPI {
     /**
      * Set the game which the Bot is playing.
      *
-     * @param game The game representation, null if you want to clear the playing status of the Bot
+     * @param game The game representation, null if you want to clear the playing
+     *             status of the Bot
      */
     void setPlaying(@Nullable Game game);
 
     /**
      * Set the music which the Bot is listening.
      *
-     * @param softwareName The music software name. Currently supports: cloudmusic, qqmusic, kugou
-     * @param singerName The singer name
-     * @param musicName The music name
+     * @param softwareName The music software name. Currently supports: cloudmusic,
+     *                     qqmusic, kugou
+     * @param singerName   The singer name
+     * @param musicName    The music name
      */
     void setListening(
             @NotNull String softwareName,
             @NotNull String singerName,
-            @NotNull String musicName
-    );
+            @NotNull String musicName);
 
     /**
      * Clear the listening status. This should fail silently.
@@ -180,7 +172,8 @@ public interface HttpAPI {
      *
      * @param id The ID
      * @return The requested {@link TextChannelMessage} object
-     * @throws NoSuchElementException Thrown if there is no message object matches the provided ID
+     * @throws NoSuchElementException Thrown if there is no message object matches
+     *                                the provided ID
      */
     TextChannelMessage getTextChannelMessage(String id) throws NoSuchElementException;
 
@@ -189,7 +182,8 @@ public interface HttpAPI {
      *
      * @param id The ID
      * @return The requested {@link ChannelMessage} object
-     * @throws NoSuchElementException Thrown if there is no message object matches the provided ID
+     * @throws NoSuchElementException Thrown if there is no message object matches
+     *                                the provided ID
      */
     ChannelMessage getChannelMessage(String id) throws NoSuchElementException;
 
@@ -197,9 +191,10 @@ public interface HttpAPI {
      * Get a {@link PrivateMessage} which matches the provided ID.
      *
      * @param user The user of the chat session where the message resides
-     * @param id The message ID
+     * @param id   The message ID
      * @return The requested {@link PrivateMessage} object
-     * @throws NoSuchElementException Thrown if there is no message object matches the provided ID
+     * @throws NoSuchElementException Thrown if there is no message object matches
+     *                                the provided ID
      */
     PrivateMessage getPrivateMessage(User user, String id) throws NoSuchElementException;
 
@@ -257,8 +252,10 @@ public interface HttpAPI {
      * Get the friend state.
      * 
      * @see FriendState
-     * @param lazyInit True if you don't need all data before returning the final object,
-     *                 which means the API request won't be performed until you called the method
+     * @param lazyInit True if you don't need all data before returning the final
+     *                 object,
+     *                 which means the API request won't be performed until you
+     *                 called the method
      *                 of the resulting object
      */
     FriendState getFriendState(boolean lazyInit);
@@ -266,9 +263,11 @@ public interface HttpAPI {
     /**
      * Send a friend request to the specified user.
      * 
-     * @param user The target user
-     * @param method How did you found the specified user. (Maybe a client-specific argument?) 0 - Search, 2 - From a guild
-     * @param from From which server did you add this user, should be NOT NULL if {@code method == 2}
+     * @param user   The target user
+     * @param method How did you found the specified user. (Maybe a client-specific
+     *               argument?) 0 - Search, 2 - From a guild
+     * @param from   From which server did you add this user, should be NOT NULL if
+     *               {@code method == 2}
      */
     void addFriend(User user, int method, String from);
 
@@ -276,7 +275,7 @@ public interface HttpAPI {
      * Handle a friend request.
      * 
      * @param requestId The ID of the friend request
-     * @param accept True if you want to accept the request
+     * @param accept    True if you want to accept the request
      */
     void handleFriendRequest(int requestId, boolean accept);
 

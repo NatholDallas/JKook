@@ -16,20 +16,22 @@
 
 package snw.jkook.plugin;
 
-import org.yaml.snakeyaml.Yaml;
-import snw.jkook.util.Validate;
+import static java.util.Collections.emptyList;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import org.yaml.snakeyaml.Yaml;
+
+import snw.jkook.util.Validate;
 
 /**
  * Represents a basic Plugin loader implementation.
@@ -42,7 +44,7 @@ public abstract class PluginClassLoader extends URLClassLoader implements Plugin
     }
 
     public PluginClassLoader(ClassLoader classLoader) {
-        this(new URL[]{}, classLoader);
+        this(new URL[] {}, classLoader);
     }
 
     public PluginClassLoader(URL[] urls, ClassLoader parent) {
@@ -76,17 +78,22 @@ public abstract class PluginClassLoader extends URLClassLoader implements Plugin
 
     protected Class<? extends Plugin> lookForMainClass(String mainClassName, File file) throws Exception {
         // if the class has already loaded, a conflict has been found.
-        // so many things can cause the conflict, such as a class with the same binary name, or the Plugin author trying to use internal classes (e.g. java.lang.Object)
+        // so many things can cause the conflict, such as a class with the same binary
+        // name, or the Plugin author trying to use internal classes (e.g.
+        // java.lang.Object)
         if (findLoadedClass(mainClassName) != null) {
-            throw new IllegalArgumentException("The main class defined in plugin.yml has already been defined in the VM.");
+            throw new IllegalArgumentException(
+                    "The main class defined in plugin.yml has already been defined in the VM.");
         }
 
-        addURL(file.toURI().toURL()); // add URL of the Plugin archive file so that the classloader can find the Plugin main class.
+        addURL(file.toURI().toURL()); // add URL of the Plugin archive file so that the classloader can find the
+                                      // Plugin main class.
         // No check, because the Exception will be handled by the caller
         Class<? extends Plugin> main = loadClass(mainClassName, true).asSubclass(Plugin.class);
 
         if (main.getDeclaredConstructors().length != 1) {
-            throw new IllegalStateException("Unexpected constructor count, expected 1, got " + main.getDeclaredConstructors().length);
+            throw new IllegalStateException(
+                    "Unexpected constructor count, expected 1, got " + main.getDeclaredConstructors().length);
         }
         return main;
     }
@@ -106,7 +113,8 @@ public abstract class PluginClassLoader extends URLClassLoader implements Plugin
      * @param description The description object
      * @throws Exception Thrown if something went really wrong
      */
-    protected abstract <T extends Plugin> T construct(final Class<T> cls, final PluginDescription description) throws Exception;
+    protected abstract <T extends Plugin> T construct(final Class<T> cls, final PluginDescription description)
+            throws Exception;
 
     @Override
     public PluginDescriptionResolver getPluginDescriptionResolver() {
@@ -114,7 +122,8 @@ public abstract class PluginClassLoader extends URLClassLoader implements Plugin
     }
 
     /**
-     * The standard implementation of {@link PluginDescriptionResolver} which can resolve a plugin.yml file.
+     * The standard implementation of {@link PluginDescriptionResolver} which can
+     * resolve a plugin.yml file.
      */
     public static final class PluginDotYMLResolver implements PluginDescriptionResolver {
         public static final PluginDotYMLResolver INSTANCE = new PluginDotYMLResolver();
@@ -141,6 +150,12 @@ public abstract class PluginClassLoader extends URLClassLoader implements Plugin
             final Yaml parser = new Yaml();
             try {
                 final Map<String, Object> ymlContent = parser.load(stream);
+                @SuppressWarnings("unchecked")
+                final List<String> authors = (List<String>) ymlContent.getOrDefault("authors", emptyList());
+                @SuppressWarnings("unchecked")
+                final List<String> depend = (List<String>) ymlContent.getOrDefault("depend", emptyList());
+                @SuppressWarnings("unchecked")
+                final List<String> softDepend = (List<String>) ymlContent.getOrDefault("softdepend", emptyList());
                 // noinspection unchecked
                 return new PluginDescription(
                         Objects.requireNonNull(ymlContent.get("name"), "name is missing").toString(),
@@ -149,10 +164,9 @@ public abstract class PluginClassLoader extends URLClassLoader implements Plugin
                         ymlContent.getOrDefault("description", "").toString(),
                         ymlContent.getOrDefault("website", "").toString(),
                         Objects.requireNonNull(ymlContent.get("main"), "main is missing").toString(),
-                        (List<String>) ymlContent.getOrDefault("authors", Collections.emptyList()),
-                        (List<String>) ymlContent.getOrDefault("depend", Collections.emptyList()),
-                        (List<String>) ymlContent.getOrDefault("softdepend", Collections.emptyList())
-                );
+                        authors,
+                        depend,
+                        softDepend);
             } catch (ClassCastException e) {
                 throw new IllegalArgumentException("Invalid plugin.yml", e);
             }

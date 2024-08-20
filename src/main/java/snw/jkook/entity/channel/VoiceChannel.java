@@ -16,17 +16,17 @@
 
 package snw.jkook.entity.channel;
 
-import org.jetbrains.annotations.Contract;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import snw.jkook.Permission;
 import snw.jkook.entity.User;
 import snw.jkook.util.RequirePermission;
 import snw.jkook.util.Validate;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Represents a channel that can chat using voice.
